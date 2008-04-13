@@ -9,6 +9,23 @@ module MatzBot
     # put our regexp's together outside of the instances they are used
     @privmsg = /^\:(.+)\!\~?(.+)\@(.+) PRIVMSG \#?(\w+) \:(.+)/
 
+
+    # Class: Bot
+    # Desc: This Bot class exists for the sake of extensibility
+    class Bot
+      attr_accessor :server, :port, :nick, :name, :user, :pass, :chan
+      
+      def initialize(config)
+        self.server = config[:server]
+        self.port   = config[:port]
+        self.user   = config[:user]
+        self.nick   = config[:nick]
+        self.pass   = config[:password]
+        self.chan   = config[:channel]
+        self.name   = config[:name]
+      end
+    end
+
     def start(options)
       self.config ||= {}
       self.config.merge! Hash[*options.map { |k,v| [k.intern, v] }.flatten]
@@ -18,17 +35,21 @@ module MatzBot
     end
 
     def connect!
-      log "Connecting to #{config[:server]}:#{config[:port]}..."
-      self.socket = TCPSocket.new(config[:server], config[:port])
+      x = Bot.new(config)
+      
+      log "Connecting to #{x.server}:#{x.port}..."
 
-      socket.puts "USER #{config[:user]} #{config[:nick]} #{config[:name]} :#{config[:name]} \r\n"
-      socket.puts "NICK #{config[:nick]} \r\n"
+      self.socket = TCPSocket.new(x.server, x.port)
 
-      socket.puts "PRIVMSG NickServ :IDENTIFY #{config[:password]}" if config[:password]
 
+      socket.puts "USER #{x.user} #{x.nick} #{x.name} :#{x.name} \r\n"
+      socket.puts "NICK #{x.nick} \r\n"
+
+      socket.puts "PRIVMSG NickServ :IDENTIFY #{x.pass}" if x.pass
+      
       # channel does not have a # in front of it, so add it
-      config[:channel] = config[:channel][/^#/] ? config[:channel] : '#' + config[:channel]
-      join config[:channel]
+      x.chan = x.chan[/^#/] ? x.chan : '#' + x.chan
+      join x.chan
     end
 
     def reconnect!

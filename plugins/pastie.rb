@@ -1,7 +1,11 @@
 require 'pastis'
 
 module MatzBot::Commands
+  def pst(dt)
+    pm("", gt_nck)
+  end
+  
   def pastie(data)
-    pm("ehehehe", get_nick)
+    pm("oooooXxxxXooooo", get_nick)
   end
 end
