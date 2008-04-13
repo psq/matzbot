@@ -6,6 +6,9 @@ module MatzBot
 
     attr_accessor :config, :socket, :last_nick, :authorized
 
+    # put our regexp's together outside of the instances they are used
+    @privmsg = /^\:(.+)\!\~?(.+)\@(.+) PRIVMSG \#?(\w+) \:(.+)/
+
     def start(options)
       self.config ||= {}
       self.config.merge! Hash[*options.map { |k,v| [k.intern, v] }.flatten]
@@ -23,7 +26,7 @@ module MatzBot
 
       socket.puts "PRIVMSG NickServ :IDENTIFY #{config[:password]}" if config[:password]
 
-      # channel might not have a # in front of it, so add it
+      # channel does not have a # in front of it, so add it
       config[:channel] = config[:channel][/^#/] ? config[:channel] : '#' + config[:channel]
       join config[:channel]
     end
@@ -40,9 +43,6 @@ module MatzBot
           react_to socket.gets
         end
       end
-      #socket.each do |line|      
-      #  react_to line  # its own method so we can change it on the fly, without hurting the loop
-      #end
     end
 
     def react_to(line)
@@ -59,9 +59,11 @@ module MatzBot
 
       pong(line) if line[0..3] == "PING" # keep-alive
 
-      if info && info.last    # only called if grabbing the info was successful
+      if info && info[-1]    # only called if grabbing the info was successful
         log_message info    # logs in a friendly format, in chat.txt
-        execute(info.last, info.first) if info
+        puts info[-2]
+        puts info[1]
+        execute(info[-1], info[0]) if info
       elsif has_error?(line)
         reconnect! 
       end
@@ -87,7 +89,7 @@ module MatzBot
         command.shift if command.first =~ /^#{config[:nick]}/i
 
         if Commands.methods.include? command.first and !(EmptyModule.methods.include? command.first)
-          Commands.send(command.first, command[1..-1])      
+          Commands.send(command.first, command[1..-1])
         #else
         #  say "no command #{command}"
         end
@@ -116,7 +118,7 @@ module MatzBot
       # The following is the format of what the bot recieves:
       # :kyle!~kyle@X-24735511.lmdaca.adelphia.net PRIVMSG #youngcoders :for the most part
       # :nick!~ident@host PRIVMSG #channel :message
-      text =~ /^\:(.+)\!\~?(.+)\@(.+) PRIVMSG \#?(\w+) \:(.+)/ ? [$1, $2, $3, $4, $5] : false
+      text =~ @privmsg ? Regexp.last_match : false
     end
     
     def authorize?(data)

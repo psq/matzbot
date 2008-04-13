@@ -1,7 +1,8 @@
 module MatzBot::Commands
   def version(data = nil)
-    `svn info | grep Revision` =~ /(\d+)/
-    say ["Version #{$1}" + ((`svn status | grep '^M'`.length > 0) ? ", with local changes" : "")]
+   # `svn info | grep Revision` =~ /(\d+)/
+   # say ["Version #{$1}" + ((`svn status | grep '^M'`.length > 0) ? ", with local changes" : "")]
+    say "Version is -10.999"
   end
   
   def be_polite(data=nil)

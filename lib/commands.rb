@@ -42,6 +42,12 @@ module MatzBot
     alias :puts :say
     private :puts
 
+    def ctcp(data)
+      puts "caught the ctcp request: #{get_nick}"
+      
+      socket.puts "PRIVMSG #{get_nick} :\01CHAT\01"
+    end
+    
     def save!(data)
       Session.save
       puts "Saved session data. ;)"
@@ -59,6 +65,11 @@ module MatzBot
     end
 
  private
+    def get_nick
+      nick = Client.last_nick.split("!")
+      nick[0].gsub!(/:/, '')
+    end
+ 
     def session
       Session.session
     end
@@ -67,7 +78,7 @@ module MatzBot
       say "#{Client.last_nick}: #{string}" if Client.last_nick
     end
 
-    def pm(data, nick = Client.last_nick)
+    def pm(data, nick)
       say(data, nick)
     end
 
