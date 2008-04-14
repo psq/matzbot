@@ -31,7 +31,7 @@ module MatzBot
       fork do
         Process.setsid
         exit if fork
-        store(Process.pid)
+        #store(Process.pid)
         Dir.chdir WorkingDirectory
         File.umask 0000
         STDIN.reopen "/dev/null"

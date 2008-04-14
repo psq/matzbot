@@ -5,9 +5,23 @@ module MatzBot
   # Class: Raw
   # Desc:  This class represents the raw IRC commands coming in through the socket.
   class Raw
-    attr_accessor :sender, :body, :type
+    attr_accessor :sender, :body, :type, :to, :raw
+
+    @privmsg = /^\:(.+)\!\~?(.+)\@(.+) PRIVMSG \#?(\w+) \:(.+)/
+
+    def initialize(raw)
+      if raw =~ @privmsg
+        self.typer(Regexp.last_match.to_a)
+      else
+        puts "not a PRIVMSG"
+      end
+    end
     
-    def initialize
+    def typer(raw)
+      self.sender = { :nick => raw[1], :name => raw[2], :hostmask => raw[3] }
+      self.to     = raw[4]
+      self.body   = raw[5]
+      self.raw    = raw[0]
     end
   end
 
@@ -89,12 +103,18 @@ module MatzBot
       info = grab_info(line) # grabs the info from an PRIVMSG
       puts line              # puts to the console
 
+      #l && info ? l.update(info) : l.new(info)
+
+      l = Raw.new(line)
+      puts "from the Raw class: #{l.body}" if l.body
+
       pong(line) if line[0..3] == "PING" # keep-alive
 
       if info && info[-1]    # only called if grabbing the info was successful
         log_message info    # logs in a friendly format, in chat.txt
-        puts info[-2]
-        puts info[1]
+        
+        info.to_a.each {|x| puts "\n#{x}"}
+        
         execute(info[-1], info[0]) if info
       elsif has_error?(line)
         reconnect! 
