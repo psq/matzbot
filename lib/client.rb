@@ -1,6 +1,16 @@
 require 'socket'
 
 module MatzBot
+
+  # Class: Raw
+  # Desc:  This class represents the raw IRC commands coming in through the socket.
+  class Raw
+    attr_accessor :sender, :body, :type
+    
+    def initialize
+    end
+  end
+
   module Client
     extend self
 
@@ -11,7 +21,8 @@ module MatzBot
 
 
     # Class: Bot
-    # Desc: This Bot class exists for the sake of extensibility
+    # Desc: This Bot class exists for the sake of extensibility (multiple bots in the future, etc)
+    #       and so connect! looks a bit less flustered.
     class Bot
       attr_accessor :server, :port, :nick, :name, :user, :pass, :chan
       
