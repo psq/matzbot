@@ -25,6 +25,23 @@ module MatzBot
     end
   end
 
+    # Class: Bot
+    # Desc: This Bot class exists for the sake of extensibility (multiple bots in the future, etc)
+    #       and so connect! looks a bit less flustered.
+  class Bot
+    attr_accessor :server, :port, :nick, :name, :user, :pass, :chan
+      
+    def initialize(config)
+      self.server = config[:server]
+      self.port   = config[:port]
+      self.user   = config[:user]
+      self.nick   = config[:nick]
+      self.pass   = config[:password]
+      self.chan   = config[:channel]
+      self.name   = config[:name]
+    end
+  end
+
   module Client
     extend self
 
@@ -33,23 +50,6 @@ module MatzBot
     # put our regexp's together outside of the instances they are used
     @privmsg = /^\:(.+)\!\~?(.+)\@(.+) PRIVMSG \#?(\w+) \:(.+)/
 
-
-    # Class: Bot
-    # Desc: This Bot class exists for the sake of extensibility (multiple bots in the future, etc)
-    #       and so connect! looks a bit less flustered.
-    class Bot
-      attr_accessor :server, :port, :nick, :name, :user, :pass, :chan
-      
-      def initialize(config)
-        self.server = config[:server]
-        self.port   = config[:port]
-        self.user   = config[:user]
-        self.nick   = config[:nick]
-        self.pass   = config[:password]
-        self.chan   = config[:channel]
-        self.name   = config[:name]
-      end
-    end
 
     def start(options)
       self.config ||= {}
