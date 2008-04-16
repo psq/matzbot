@@ -7,7 +7,7 @@ context "A Raw object created from a /msg to a user" do
     @raw_pm = MatzBot::Raw.new(@msg1)
     
     @msg2 = ':automatthew!n=matthew@10.0.0.5 PRIVMSG #waves :this is a message only to #waves'
-    @raw_chan = Matzbot::Raw.new(@msg2)
+    @raw_chan = MatzBot::Raw.new(@msg2)
   end
   
   specify "has a type" do
@@ -23,8 +23,9 @@ context "A Raw object created from a /msg to a user" do
     @raw_pm.to.should == "ab5tract"
   end
   
-  satisfy "is channel message" do
+  specify "is channel message" do
     @raw_chan.to.should =~ /\A#/
+  end
   
   specify "has a body" do
     @raw_pm.body.should == "this is a message only to ab5tract"
