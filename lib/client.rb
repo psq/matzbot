@@ -10,7 +10,7 @@ module MatzBot
     def initialize(raw)
       return unless match = raw.match(Raw.pm_regex)
       @type = :msg
-      self.typer(match.to_a)
+      self.typer(match)
     end
     
     def self.pm_regex
