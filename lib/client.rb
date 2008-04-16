@@ -8,22 +8,26 @@ module MatzBot
     attr_accessor :sender, :body, :type, :to, :raw
 
     def initialize(raw)
-      return unless match = raw.match(Raw.pm_regex)
-      @type = @to.match( /^#/ )? :chan : :pm
+      return unless m = raw.match(Raw.pm_regex)
       
-      typer(match)
+      @raw                = raw   # also, m[0]
+      @sender             = {}
+      @sender[:nick]      = m[1]
+      @sender[:name]      = m[2]
+      @sender[:hostmask]  = m[3]
+      @to                 = m[4]
+      @body               = m[5]
+
+      # the presence of '#' means the message was bound for a channel
+      #   otherwise, it's a private message to a user
+      @type = @to.match( /^#/ )? :chan : :pm
+    
     end
     
     def self.pm_regex
       @pm_regex ||= /^\:(.+)\!\~?(.+)\@(.+) PRIVMSG (\#?\w+) \:(.+)/
     end
-    
-    def typer(raw)
-      self.sender = { :nick => raw[1], :name => raw[2], :hostmask => raw[3] }
-      self.to     = raw[4]
-      self.body   = raw[5]
-      self.raw    = raw[0]
-    end
+
   end
 
     # Class: Bot
@@ -33,13 +37,13 @@ module MatzBot
     attr_accessor :server, :port, :nick, :name, :user, :pass, :chan
       
     def initialize(config)
-      self.server = config[:server]
-      self.port   = config[:port]
-      self.user   = config[:user]
-      self.nick   = config[:nick]
-      self.pass   = config[:password]
-      self.chan   = config[:channel]
-      self.name   = config[:name]
+      @server = config[:server]
+      @port   = config[:port]
+      @user   = config[:user]
+      @nick   = config[:nick]
+      @pass   = config[:password]
+      @chan   = config[:channel]
+      @name   = config[:name]
     end
   end
 

@@ -24,10 +24,6 @@ context "A Raw object created from a /msg to a user" do
     @raw_pm.to.should == "ab5tract"
   end
   
-  specify "is channel message" do
-    @raw_chan.to.should =~ /^#/
-  end
-  
   specify "has a body" do
     @raw_pm.body.should == "this is a message only to ab5tract"
     @raw_chan.body.should == "this is a message only to #waves"
