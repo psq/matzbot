@@ -9,12 +9,13 @@ module MatzBot
 
     def initialize(raw)
       return unless match = raw.match(Raw.pm_regex)
-      @type = :msg
-      self.typer(match)
+      @type = @to.match( /^#/ )? :chan : :pm
+      
+      typer(match)
     end
     
     def self.pm_regex
-      @pm_regex ||= /^\:(.+)\!\~?(.+)\@(.+) PRIVMSG \#?(\w+) \:(.+)/
+      @pm_regex ||= /^\:(.+)\!\~?(.+)\@(.+) PRIVMSG (\#?\w+) \:(.+)/
     end
     
     def typer(raw)

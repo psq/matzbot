@@ -17,6 +17,7 @@ context "A Raw object created from a /msg to a user" do
   
   specify "has a sender" do
     @raw_pm.sender.should == {:nick=>"automatthew", :name=>"n=matthew", :hostmask=>"10.0.0.5"}
+    @raw_chan.sender.should == {:nick=>"automatthew", :name=>"n=matthew", :hostmask=>"10.0.0.5"}
   end
   
   specify "has a recipent" do
@@ -24,11 +25,12 @@ context "A Raw object created from a /msg to a user" do
   end
   
   specify "is channel message" do
-    @raw_chan.to.should =~ /\A#/
+    @raw_chan.to.should =~ /^#/
   end
   
   specify "has a body" do
     @raw_pm.body.should == "this is a message only to ab5tract"
+    @raw_chan.body.should == "this is a message only to #waves"
   end
   
 end
