@@ -7,14 +7,14 @@ module MatzBot
   class Raw
     attr_accessor :sender, :body, :type, :to, :raw
 
-    @privmsg = /^\:(.+)\!\~?(.+)\@(.+) PRIVMSG \#?(\w+) \:(.+)/
-
     def initialize(raw)
-      if raw =~ @privmsg
-        self.typer(Regexp.last_match.to_a)
-      else
-        puts "not a PRIVMSG"
-      end
+      return unless match = raw.match(Raw.pm_regex)
+      @type = :msg
+      self.typer(match.to_a)
+    end
+    
+    def self.pm_regex
+      @pm_regex ||= /^\:(.+)\!\~?(.+)\@(.+) PRIVMSG \#?(\w+) \:(.+)/
     end
     
     def typer(raw)
